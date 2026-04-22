@@ -241,7 +241,7 @@ ul { list-style: none; }
   inset: 0;
   background:
     linear-gradient(160deg, rgba(26,34,24,0.75) 0%, rgba(44,58,42,0.4) 40%, rgba(92,74,50,0.5) 100%),
-    url('https://picsum.photos/seed/mountain-forest-mist/1920/1080') center/cover no-repeat;
+    url('../img/hidro-wide.jpg') center/cover no-repeat;
   transform: scale(1.05);
   transition: transform 8s ease-out;
 }
