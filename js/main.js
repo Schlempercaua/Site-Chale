@@ -198,12 +198,22 @@ document.getElementById('reservaForm').addEventListener('submit', function (e) {
   if (mensagem) linhas.push(`- *Observações:* ${mensagem}`);
   linhas.push('', `Fico no aguardo da confirmação e de mais orientações. Desde já, muito obrigado! ${EMOJI_FOLHA}`);
 
-  const texto = encodeURIComponent(linhas.join('\n'));
+  const mensagemFinal = linhas.join('\n');
+  const texto = encodeURIComponent(mensagemFinal);
+  const waUrl = `https://wa.me/5548984276280?text=${texto}`;
+
+  console.log('[WA] Mensagem:\n', mensagemFinal);
+  console.log('[WA] URL:', waUrl);
 
   document.getElementById('formSuccess').classList.add('show');
-  setTimeout(() => {
-    window.open(`https://wa.me/5548984276280?text=${texto}`, '_blank', 'noopener,noreferrer');
-  }, 600);
+
+  // Deve ser chamado imediatamente (sem setTimeout) para preservar o gesto
+  // do usuário — iOS e Android só disparam o deep link do WhatsApp nativo
+  // quando window.open ocorre dentro do evento de clique.
+  const waJanela = window.open(waUrl, '_blank', 'noopener,noreferrer');
+  if (!waJanela) {
+    window.location.href = waUrl;
+  }
 });
 
 // ─── SET MIN DATE ─────────────────────────────────────────────────────────
