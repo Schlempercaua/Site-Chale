@@ -200,7 +200,8 @@ document.getElementById('reservaForm').addEventListener('submit', function (e) {
 
   const mensagemFinal = linhas.join('\n');
   const texto = encodeURIComponent(mensagemFinal);
-  const waUrl = `https://wa.me/5548984276280?text=${texto}`;
+  // wa.me corrompe emoji (4-byte UTF-8) na redirect 302 → vai direto ao destino final
+  const waUrl = `https://api.whatsapp.com/send/?phone=5548984276280&text=${texto}&type=phone_number&app_absent=0`;
 
   console.log('[WA] Mensagem:\n', mensagemFinal);
   console.log('[WA] URL:', waUrl);
