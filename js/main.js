@@ -180,8 +180,8 @@ document.getElementById('reservaForm').addEventListener('submit', function (e) {
     return tel;
   };
 
-  const EMOJI_SORRISO = '\u{1F60A}'; // 😊
-  const EMOJI_FOLHA   = '\u{1F33F}'; // 🌿
+  const EMOJI_SORRISO = String.fromCodePoint(128522); // 😊
+  const EMOJI_FOLHA   = String.fromCodePoint(127807);  // 🌿
 
   const linhas = [
     `Olá! ${EMOJI_SORRISO}`,
