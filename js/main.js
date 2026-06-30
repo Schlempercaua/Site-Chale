@@ -131,12 +131,6 @@ document.addEventListener('keydown', e => {
 });
 
 // ─── FORM VALIDATION & SUBMIT ─────────────────────────────────────────────
-function sanitize(str) {
-  const d = document.createElement('div');
-  d.appendChild(document.createTextNode(String(str)));
-  return d.innerHTML;
-}
-
 function showError(fieldId, show) {
   const field = document.getElementById(fieldId);
   const error = document.getElementById(fieldId + '-error');
@@ -167,25 +161,45 @@ document.getElementById('reservaForm').addEventListener('submit', function (e) {
   e.preventDefault();
   if (!validateForm()) return;
 
-  const nome     = sanitize(document.getElementById('nome').value.trim());
-  const checkin  = sanitize(document.getElementById('checkin').value);
-  const checkout = sanitize(document.getElementById('checkout').value);
-  const hospedes = sanitize(document.getElementById('hospedes').value);
-  const telefone = sanitize(document.getElementById('telefone').value.trim());
-  const mensagem = sanitize(document.getElementById('mensagem').value.trim());
+  const nome     = document.getElementById('nome').value.trim();
+  const checkin  = document.getElementById('checkin').value;
+  const checkout = document.getElementById('checkout').value;
+  const hospedes = document.getElementById('hospedes').value;
+  const telefone = document.getElementById('telefone').value.trim();
+  const mensagem = document.getElementById('mensagem').value.trim();
 
-  const texto =
-    `Olá! Gostaria de reservar o Chalé Amanhecer da Serra.%0A%0A` +
-    `👤 *Nome:* ${encodeURIComponent(nome)}%0A` +
-    `📅 *Check-in:* ${encodeURIComponent(checkin)}%0A` +
-    `📅 *Check-out:* ${encodeURIComponent(checkout)}%0A` +
-    `👥 *Hóspedes:* ${encodeURIComponent(hospedes)}%0A` +
-    `📱 *Telefone:* ${encodeURIComponent(telefone)}` +
-    (mensagem ? `%0A💬 *Obs:* ${encodeURIComponent(mensagem)}` : '');
+  const formatarData = (iso) => {
+    const [ano, mes, dia] = iso.split('-');
+    return `${dia}/${mes}/${ano}`;
+  };
+
+  const formatarTelefone = (tel) => {
+    const d = tel.replace(/\D/g, '');
+    if (d.length === 11) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+    if (d.length === 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+    return tel;
+  };
+
+  const linhas = [
+    'Olá! 😊',
+    'Gostaria de solicitar uma reserva no *Chalé Amanhecer da Serra*.',
+    '',
+    'Segue abaixo minhas informações:',
+    '',
+    `• *Nome:* ${nome}`,
+    `• *Check-in:* ${formatarData(checkin)}`,
+    `• *Check-out:* ${formatarData(checkout)}`,
+    `• *Número de hóspedes:* ${hospedes}`,
+    `• *Telefone para contato:* ${formatarTelefone(telefone)}`,
+  ];
+  if (mensagem) linhas.push(`• *Observações:* ${mensagem}`);
+  linhas.push('', 'Fico no aguardo da confirmação e de mais orientações. Desde já, muito obrigado! 🌿');
+
+  const texto = encodeURIComponent(linhas.join('\n'));
 
   document.getElementById('formSuccess').classList.add('show');
   setTimeout(() => {
-    window.open(`https://wa.me/5548999999999?text=${texto}`, '_blank', 'noopener,noreferrer');
+    window.open(`https://wa.me/5548984276280?text=${texto}`, '_blank', 'noopener,noreferrer');
   }, 600);
 });
 
