@@ -180,20 +180,23 @@ document.getElementById('reservaForm').addEventListener('submit', function (e) {
     return tel;
   };
 
+  const EMOJI_SORRISO = '\u{1F60A}'; // 😊
+  const EMOJI_FOLHA   = '\u{1F33F}'; // 🌿
+
   const linhas = [
-    'Olá! 😊',
+    `Olá! ${EMOJI_SORRISO}`,
     'Gostaria de solicitar uma reserva no *Chalé Amanhecer da Serra*.',
     '',
     'Segue abaixo minhas informações:',
     '',
-    `• *Nome:* ${nome}`,
-    `• *Check-in:* ${formatarData(checkin)}`,
-    `• *Check-out:* ${formatarData(checkout)}`,
-    `• *Número de hóspedes:* ${hospedes}`,
-    `• *Telefone para contato:* ${formatarTelefone(telefone)}`,
+    `- *Nome:* ${nome}`,
+    `- *Check-in:* ${formatarData(checkin)}`,
+    `- *Check-out:* ${formatarData(checkout)}`,
+    `- *Número de hóspedes:* ${hospedes}`,
+    `- *Telefone para contato:* ${formatarTelefone(telefone)}`,
   ];
-  if (mensagem) linhas.push(`• *Observações:* ${mensagem}`);
-  linhas.push('', 'Fico no aguardo da confirmação e de mais orientações. Desde já, muito obrigado! 🌿');
+  if (mensagem) linhas.push(`- *Observações:* ${mensagem}`);
+  linhas.push('', `Fico no aguardo da confirmação e de mais orientações. Desde já, muito obrigado! ${EMOJI_FOLHA}`);
 
   const texto = encodeURIComponent(linhas.join('\n'));
 
