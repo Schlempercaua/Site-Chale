@@ -621,6 +621,8 @@ ul { list-style: none; }
 .gal-item:nth-child(4) { grid-column: span 4; }
 .gal-item:nth-child(5) { grid-column: span 4; }
 .gal-item:nth-child(6) { grid-column: span 4; }
+.gal-item:nth-child(7) { grid-column: span 12; }
+.gal-item:nth-child(7) img { min-height: 320px; }
 
 .gal-item img {
   width: 100%;
@@ -942,9 +944,11 @@ ul { list-style: none; }
 }
 .tarifas-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
   align-items: center;
+  max-width: 760px;
+  margin-inline: auto;
 }
 .tarifa-card {
   background: white;
