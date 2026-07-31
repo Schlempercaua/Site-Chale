@@ -1,3 +1,6 @@
+// ─── PREFERÊNCIA DE MOVIMENTO REDUZIDO ─────────────────────────────────────
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 // ─── LOADER ──────────────────────────────────────────────────────────────
 window.addEventListener('load', () => {
   const loader = document.getElementById('loader');
@@ -12,11 +15,28 @@ window.addEventListener('scroll', () => {
   navbar.classList.toggle('scrolled', window.scrollY > 60);
 }, { passive: true });
 
-// ─── HERO BG ANIMATION ───────────────────────────────────────────────────
+// ─── HERO BG ANIMAÇÃO DE ENTRADA + PARALLAX SUTIL ──────────────────────────
+const heroBg = document.getElementById('heroBg');
 setTimeout(() => {
-  const heroBg = document.getElementById('heroBg');
   if (heroBg) heroBg.classList.add('loaded');
 }, 100);
+
+if (heroBg && !prefersReducedMotion) {
+  // Parallax leve via background-position (não interfere no zoom de entrada, que usa transform)
+  const heroSection = document.getElementById('inicio');
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const heroHeight = heroSection ? heroSection.offsetHeight : window.innerHeight;
+      if (window.scrollY < heroHeight) {
+        heroBg.style.backgroundPositionY = `${50 + window.scrollY * 0.04}%`;
+      }
+      ticking = false;
+    });
+  }, { passive: true });
+}
 
 // ─── HAMBURGUER ──────────────────────────────────────────────────────────
 const navToggle = document.getElementById('navToggle');
