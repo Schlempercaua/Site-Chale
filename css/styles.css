@@ -181,7 +181,7 @@ textarea:focus-visible,
   top: 0; left: 0; right: 0;
   z-index: 1000;
   padding: 1.5rem 0;
-  transition: background var(--transicao), padding var(--transicao), box-shadow var(--transicao);
+  transition: background var(--transicao), padding var(--transicao), box-shadow var(--transicao), backdrop-filter var(--transicao);
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   backface-visibility: hidden;
@@ -193,6 +193,17 @@ textarea:focus-visible,
   backdrop-filter: blur(12px);
   padding: 0.9rem 0;
   box-shadow: var(--sombra-md);
+}
+/* Sentinela observada via IntersectionObserver para alternar .scrolled na
+   navbar — evita depender do listener de "scroll" (que no iOS Safari pode
+   disparar de forma agrupada/irregular durante fling e causar flicker de
+   classe). Fica nos primeiros 60px da página, mesmo limiar do comportamento
+   anterior baseado em scrollY. */
+.nav-sentinel {
+  position: absolute;
+  top: 0; left: 0;
+  width: 1px; height: 60px;
+  pointer-events: none;
 }
 .nav-inner {
   display: flex;

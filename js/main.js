@@ -9,11 +9,27 @@ window.addEventListener('load', () => {
   }
 });
 
-// ─── NAVBAR SCROLL ────────────────────────────────────────────────────────
+// ─── NAVBAR: TROCA DE ESTADO (transparente → sólida) ───────────────────────
+// Usa IntersectionObserver em vez de um listener de "scroll" cru: no iOS
+// Safari, eventos de scroll podem disparar de forma agrupada/irregular
+// durante scroll rápido (fling), dessincronizando a classe do estado visual
+// real e causando um flicker na navbar. IntersectionObserver é assíncrono e
+// não depende da frequência de disparo desses eventos.
 const navbar = document.getElementById('navbar');
-window.addEventListener('scroll', () => {
-  navbar.classList.toggle('scrolled', window.scrollY > 60);
-}, { passive: true });
+const navSentinel = document.getElementById('navSentinel');
+
+if (navbar && navSentinel && 'IntersectionObserver' in window) {
+  const navObserver = new IntersectionObserver(
+    ([entry]) => navbar.classList.toggle('scrolled', !entry.isIntersecting),
+    { threshold: 0 }
+  );
+  navObserver.observe(navSentinel);
+} else if (navbar) {
+  // Fallback para navegadores sem suporte a IntersectionObserver
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+}
 
 // ─── HERO BG ANIMAÇÃO DE ENTRADA + PARALLAX SUTIL ──────────────────────────
 const heroBg = document.getElementById('heroBg');
