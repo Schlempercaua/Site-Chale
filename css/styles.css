@@ -1383,7 +1383,9 @@ textarea:focus-visible,
 /* ─── FOOTER ─────────────────────────────────────────────────────────── */
 footer {
   background: var(--cor-bg-escuro);
-  padding: 5rem 0 2rem;
+  /* padding-bottom reserva espaço para o botão flutuante do WhatsApp
+     (fixed, bottom:2rem) não cobrir os links de redes sociais */
+  padding: 5rem 0 6.5rem;
 }
 .footer-grid {
   display: grid;
@@ -1664,8 +1666,8 @@ footer {
 
   .mobile-cta { display: block; }
   .whatsapp-float { bottom: 5rem; }
-  /* Reserva espaço para a barra fixa de reserva não cobrir as redes sociais do rodapé */
-  footer { padding-bottom: 6.5rem; }
+  /* No mobile a barra de reserva fixa soma-se ao botão de WhatsApp: precisa de mais folga */
+  footer { padding-bottom: 10rem; }
 }
 
 @media (max-width: 480px) {
