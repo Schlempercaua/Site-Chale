@@ -28,7 +28,13 @@ body {
   font-family: var(--fonte-corpo);
   background-color: var(--cor-bg);
   color: var(--cor-texto);
+  /* overflow-x:hidden transforma o body num scroll container e isso é o que
+     faz o iOS Safari "perder" o position:fixed da navbar durante o scroll
+     (conteúdo aparece por cima dela). overflow-x:clip evita o scroll
+     horizontal sem criar esse scrollport — fallback para hidden se o
+     navegador não suportar clip. */
   overflow-x: hidden;
+  overflow-x: clip;
   line-height: 1.7;
 }
 
@@ -161,10 +167,11 @@ textarea:focus-visible,
   padding: 1.5rem 0;
   transition: background var(--transicao), padding var(--transicao), box-shadow var(--transicao);
   /* Força a própria camada de composição: evita o bug do iOS Safari em que
-     elementos "fixed" se descolam do topo durante o bounce elástico do scroll. */
+     elementos "fixed" se descolam do topo durante o scroll. */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   backface-visibility: hidden;
+  will-change: transform;
 }
 .navbar.scrolled {
   background: rgba(26, 34, 24, 0.97);
@@ -1665,9 +1672,10 @@ footer {
   .exp-card { height: 280px; }
 
   .mobile-cta { display: block; }
-  .whatsapp-float { bottom: 5rem; }
-  /* No mobile a barra de reserva fixa soma-se ao botão de WhatsApp: precisa de mais folga */
-  footer { padding-bottom: 10rem; }
+  /* A barra fixa .mobile-cta já é o CTA de WhatsApp no mobile — o botão
+     redondo flutuante ficaria redundante (e sobreposto) ao lado dela */
+  .whatsapp-float { display: none; }
+  footer { padding-bottom: 8rem; }
 }
 
 @media (max-width: 480px) {
