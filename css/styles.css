@@ -181,7 +181,7 @@ textarea:focus-visible,
   top: 0; left: 0; right: 0;
   z-index: 1000;
   padding: 1.5rem 0;
-  transition: background var(--transicao), padding var(--transicao), box-shadow var(--transicao), backdrop-filter var(--transicao);
+  transition: background var(--transicao), padding var(--transicao), box-shadow var(--transicao);
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   backface-visibility: hidden;
@@ -189,8 +189,10 @@ textarea:focus-visible,
   will-change: transform;
 }
 .navbar.scrolled {
+  /* Sem backdrop-filter: além de pesado para o compositor do WebKit em iOS
+     (custo real de fling/flicker em scroll rápido), o fundo já é 100% opaco
+     — o blur não tinha mais nenhum efeito visual perceptível por baixo dele. */
   background: var(--cor-bg-escuro);
-  backdrop-filter: blur(12px);
   padding: 0.9rem 0;
   box-shadow: var(--sombra-md);
 }
