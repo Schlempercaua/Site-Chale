@@ -26,6 +26,14 @@ html {
   scroll-behavior: smooth;
   font-size: 16px;
   background-color: var(--cor-bg-escuro);
+  /* .fade-in-left/.fade-in-right animam elementos com translateX(±50px)
+     antes de entrarem em viewport; em seções sem overflow:hidden próprio
+     esse deslocamento vaza para o scroll horizontal da página. O overflow-x
+     do body sozinho não bloqueia isso porque em modo standards é o <html>
+     que atua como elemento de scroll do viewport — por isso o hidden aqui
+     também, além do overflow:hidden pontual em cada seção. */
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 html, body {
@@ -573,6 +581,7 @@ textarea:focus-visible,
   padding: 8rem 0;
   background: var(--cor-bg);
   position: relative;
+  overflow: hidden;
 }
 .sobre::before {
   content: '';
@@ -1194,6 +1203,7 @@ textarea:focus-visible,
 .contato {
   padding: 8rem 0;
   background: var(--cor-bg);
+  overflow: hidden;
 }
 .guia-banner {
   display: flex;
