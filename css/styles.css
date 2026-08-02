@@ -160,6 +160,11 @@ textarea:focus-visible,
   z-index: 1000;
   padding: 1.5rem 0;
   transition: background var(--transicao), padding var(--transicao), box-shadow var(--transicao);
+  /* Força a própria camada de composição: evita o bug do iOS Safari em que
+     elementos "fixed" se descolam do topo durante o bounce elástico do scroll. */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
 }
 .navbar.scrolled {
   background: rgba(26, 34, 24, 0.97);
@@ -1588,7 +1593,15 @@ footer {
 /* ─── RESPONSIVE ─────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .sobre-grid, .chegar-grid, .contato-grid { grid-template-columns: 1fr; gap: 3rem; }
-  .sobre-img-accent-wrap { display: none; }
+  /* Em vez de esconder a foto dos poneis, empilha ela abaixo da foto principal */
+  .sobre-img-wrapper { padding-bottom: 1rem; }
+  .sobre-img-accent-wrap {
+    position: static;
+    width: 100%;
+    height: 280px;
+    margin-top: 1.2rem;
+    right: auto; bottom: auto;
+  }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .gal-item:nth-child(1) { grid-column: span 12; grid-row: span 1; }
   .gal-item:nth-child(1) img { min-height: 320px; }
@@ -1624,6 +1637,9 @@ footer {
   .hero-preco { display: none; }
   .hero-content { padding-bottom: 5rem; }
 
+  .sobre-img-main,
+  .sobre-img-wrapper > picture:first-child { height: 420px; }
+  .sobre-img-accent-wrap { height: 240px; }
   .sobre-diferenciais { grid-template-columns: 1fr; }
   .form-row { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; gap: 2.5rem; }
@@ -1648,12 +1664,15 @@ footer {
 
   .mobile-cta { display: block; }
   .whatsapp-float { bottom: 5rem; }
+  /* Reserva espaço para a barra fixa de reserva não cobrir as redes sociais do rodapé */
+  footer { padding-bottom: 6.5rem; }
 }
 
 @media (max-width: 480px) {
   .gal-item:nth-child(4), .gal-item:nth-child(5), .gal-item:nth-child(6),
   .gal-item:nth-child(7), .gal-item:nth-child(8),
   .gal-item:nth-child(9), .gal-item:nth-child(10) { grid-column: span 12; }
+  .sobre-img-accent-wrap { height: 220px; }
   .comodidades-grid { grid-template-columns: repeat(2, 1fr); }
   .form-reserva { padding: 2rem 1.5rem; }
   .hero-title { font-size: 2.6rem; }
