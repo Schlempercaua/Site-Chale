@@ -161,13 +161,18 @@ textarea:focus-visible,
 
 /* ─── NAVBAR ─────────────────────────────────────────────────────────── */
 .navbar {
-  position: fixed;
+  /* position:fixed em iOS Safari pode "descolar" do topo durante o scroll
+     (bug antigo e bem documentado do WebKit, mesmo com hints de composição).
+     position:sticky não sofre desse problema. Para manter o visual de navbar
+     transparente flutuando sobre a foto do hero, a navbar ocupa espaço normal
+     no fluxo do documento e uma margin-bottom negativa "puxa" o hero de volta
+     para debaixo dela — mesmo resultado visual, mecanismo mais confiável. */
+  position: sticky;
   top: 0; left: 0; right: 0;
   z-index: 1000;
   padding: 1.5rem 0;
+  margin-bottom: -81px;
   transition: background var(--transicao), padding var(--transicao), box-shadow var(--transicao);
-  /* Força a própria camada de composição: evita o bug do iOS Safari em que
-     elementos "fixed" se descolam do topo durante o scroll. */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   backface-visibility: hidden;
