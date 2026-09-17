@@ -1,170 +1,121 @@
-// ─── PREFERÊNCIA DE MOVIMENTO REDUZIDO ─────────────────────────────────────
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-// ─── LOADER ──────────────────────────────────────────────────────────────
-window.addEventListener('load', () => {
-  const loader = document.getElementById('loader');
-  if (loader) {
-    setTimeout(() => loader.classList.add('hidden'), 600);
-  }
-});
-
-// ─── NAVBAR: TROCA DE ESTADO (transparente → sólida) ───────────────────────
-// Usa IntersectionObserver em vez de um listener de "scroll" cru: no iOS
-// Safari, eventos de scroll podem disparar de forma agrupada/irregular
-// durante scroll rápido (fling), dessincronizando a classe do estado visual
-// real e causando um flicker na navbar. IntersectionObserver é assíncrono e
-// não depende da frequência de disparo desses eventos.
+// Lightweight presentation enhancement; no content is generated or rewritten.
+const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const navbar = document.getElementById('navbar');
-const navSentinel = document.getElementById('navSentinel');
-
-if (navbar && navSentinel && 'IntersectionObserver' in window) {
-  const navObserver = new IntersectionObserver(
-    ([entry]) => navbar.classList.toggle('scrolled', !entry.isIntersecting),
-    { threshold: 0 }
-  );
-  navObserver.observe(navSentinel);
-} else if (navbar) {
-  // Fallback para navegadores sem suporte a IntersectionObserver
-  window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 60);
-  }, { passive: true });
-}
-
-// ─── HERO BG ANIMAÇÃO DE ENTRADA + PARALLAX SUTIL ──────────────────────────
-const heroBg = document.getElementById('heroBg');
-setTimeout(() => {
-  if (heroBg) heroBg.classList.add('loaded');
-}, 100);
-
-if (heroBg && !prefersReducedMotion) {
-  // Parallax leve via background-position (não interfere no zoom de entrada, que usa transform)
-  const heroSection = document.getElementById('inicio');
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => {
-      const heroHeight = heroSection ? heroSection.offsetHeight : window.innerHeight;
-      if (window.scrollY < heroHeight) {
-        heroBg.style.backgroundPositionY = `${50 + window.scrollY * 0.04}%`;
-      }
-      ticking = false;
-    });
-  }, { passive: true });
-}
-
-// ─── HAMBURGUER ──────────────────────────────────────────────────────────
 const navToggle = document.getElementById('navToggle');
-const navLinks  = document.getElementById('navLinks');
+const navLinks = document.getElementById('navLinks');
+const heroBg = document.getElementById('heroBg');
+document.documentElement.classList.add('js');
 
-navToggle.addEventListener('click', () => {
-  const isOpen = navLinks.classList.toggle('open');
-  navToggle.classList.toggle('active', isOpen);
-  navToggle.setAttribute('aria-expanded', String(isOpen));
-});
-
-navLinks.querySelectorAll('a').forEach(a => {
-  a.addEventListener('click', () => {
-    navLinks.classList.remove('open');
-    navToggle.classList.remove('active');
-    navToggle.setAttribute('aria-expanded', 'false');
-  });
-});
-
-// ─── INTERSECTION OBSERVER (FADE IN) ─────────────────────────────────────
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
+if ('IntersectionObserver' in window) {
+  new IntersectionObserver(([entry]) => navbar.classList.toggle('scrolled', !entry.isIntersecting)).observe(document.getElementById('navSentinel'));
+  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
     if (entry.isIntersecting) {
+      entry.target.classList.remove('reveal-pending');
       entry.target.classList.add('visible');
       observer.unobserve(entry.target);
     }
+  }), {threshold:0, rootMargin:'0px 0px 40px 0px'});
+  document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right').forEach(el => {
+    if (!motion.matches && el.getBoundingClientRect().top > innerHeight) el.classList.add('reveal-pending');
+    observer.observe(el);
   });
-}, { threshold: 0.12 });
-
-document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right')
-  .forEach(el => observer.observe(el));
-
-// ─── COUNTER ANIMATION ───────────────────────────────────────────────────
-function animateCounter(el) {
-  const target   = parseInt(el.dataset.target, 10);
-  const duration = 1800;
-  const start    = performance.now();
-
-  function step(now) {
-    const progress = Math.min((now - start) / duration, 1);
-    const eased    = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-    const current  = Math.floor(eased * target);
-    el.textContent = current.toLocaleString('pt-BR');
-    if (progress < 1) {
-      requestAnimationFrame(step);
-    } else {
-      el.textContent = target.toLocaleString('pt-BR');
-    }
+}
+motion.addEventListener('change', () => {
+  if (motion.matches) {
+    document.querySelectorAll('.reveal-pending').forEach(el=>el.classList.remove('reveal-pending'));
+    heroBg.style.removeProperty('--depth');
   }
-  requestAnimationFrame(step);
-}
-
-const counterObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      animateCounter(entry.target);
-      counterObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.5 });
-
-document.querySelectorAll('.stat-count').forEach(el => counterObserver.observe(el));
-
-// ─── LIGHTBOX ────────────────────────────────────────────────────────────
-const galItems    = Array.from(document.querySelectorAll('.gal-item img'));
-const lightbox    = document.getElementById('lightbox');
-const lightboxImg = document.getElementById('lightboxImg');
-let currentIndex  = 0;
-
-function openLightbox(index) {
-  currentIndex = index;
-  const img = galItems[index];
-  lightboxImg.src = img.src;
-  lightboxImg.alt = img.alt;
-  lightbox.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  lightbox.focus();
-}
-
-function closeLightbox() {
-  lightbox.classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function navLightbox(dir) {
-  currentIndex = (currentIndex + dir + galItems.length) % galItems.length;
-  const img = galItems[currentIndex];
-  lightboxImg.src = img.src;
-  lightboxImg.alt = img.alt;
-}
-
-document.querySelectorAll('.gal-item').forEach((item, i) => {
-  item.addEventListener('click', () => openLightbox(i));
-  item.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      openLightbox(i);
-    }
-  });
 });
-
-document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
-document.getElementById('lightboxPrev').addEventListener('click', () => navLightbox(-1));
-document.getElementById('lightboxNext').addEventListener('click', () => navLightbox(1));
-lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
-
-document.addEventListener('keydown', e => {
-  if (!lightbox.classList.contains('open')) return;
-  if (e.key === 'Escape')     closeLightbox();
-  if (e.key === 'ArrowLeft')  navLightbox(-1);
-  if (e.key === 'ArrowRight') navLightbox(1);
+// Restrained photographic depth, fine pointers only, no scroll repaint loop.
+document.getElementById('inicio').addEventListener('pointermove', e => {
+  if (motion.matches || !matchMedia('(hover:hover) and (pointer:fine) and (min-width:801px)').matches) return;
+  const r=heroBg.getBoundingClientRect();
+  heroBg.style.setProperty('--depth', (Math.max(0, Math.min(1, (e.clientX-r.left)/r.width))-.5)*1.2+'deg');
 });
+document.getElementById('inicio').addEventListener('pointerleave',()=>heroBg.style.removeProperty('--depth'));
+
+function setMenu(open, restore=false) {
+  navLinks.classList.toggle('open',open);
+  navToggle.classList.toggle('active',open);
+  navToggle.setAttribute('aria-expanded',String(open));
+  if (open) navLinks.querySelector('a').focus();
+  else if (restore) navToggle.focus();
+}
+navToggle.addEventListener('click',()=>setMenu(!navLinks.classList.contains('open')));
+navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
+  setMenu(false);
+  const section=document.querySelector(a.getAttribute('href'));
+  if(section){section.tabIndex=-1;section.focus({preventScroll:true});}
+}));
+document.addEventListener('click',e=>{if(!navbar.contains(e.target))setMenu(false);});
+document.addEventListener('keydown',e=>{
+  if(!navLinks.classList.contains('open'))return;
+  if(e.key==='Escape'){setMenu(false,true);return;}
+  if(e.key==='Tab'){
+    const first=navLinks.querySelector('a');
+    if(e.shiftKey && document.activeElement===first){e.preventDefault();navToggle.focus();}
+    else if(!e.shiftKey && document.activeElement===navToggle){e.preventDefault();first.focus();}
+  }
+});
+matchMedia('(max-width:800px)').addEventListener('change',()=>setMenu(false));
+
+const galItems=Array.from(document.querySelectorAll('.gal-item img'));
+const galleryTriggers=Array.from(document.querySelectorAll('.gal-item'));
+const lightbox=document.getElementById('lightbox');
+const lightboxImg=document.getElementById('lightboxImg');
+const closeButton=document.getElementById('lightboxClose');
+let currentIndex=0;
+let returnFocus;
+let priorOverflow='';
+let inerted=[];
+function showImage(){
+  lightboxImg.src=galItems[currentIndex].currentSrc || galItems[currentIndex].src;
+  lightboxImg.alt=galItems[currentIndex].alt;
+}
+function openLightbox(index){
+  currentIndex=index;returnFocus=document.activeElement;showImage();
+  priorOverflow=document.body.style.overflow;
+  lightbox.inert=false;lightbox.classList.add('open');
+  inerted=Array.from(document.body.children).filter(el=>el!==lightbox && el.tagName!=='SCRIPT' && !el.inert);
+  inerted.forEach(el=>el.inert=true);
+  document.body.style.overflow='hidden';closeButton.focus();
+}
+function closeLightbox(){
+  lightbox.classList.remove('open');lightbox.inert=true;
+  inerted.forEach(el=>el.inert=false);inerted=[];
+  document.body.style.overflow=priorOverflow;
+  returnFocus?.focus({preventScroll:true});
+}
+function navLightbox(dir){currentIndex=(currentIndex+dir+galItems.length)%galItems.length;showImage();}
+galleryTriggers.forEach((item,i)=>{
+  // Preserve the list semantics while exposing the actual keyboard action.
+  item.setAttribute('role','button');
+  item.setAttribute('aria-haspopup','dialog');
+  item.addEventListener('click',()=>openLightbox(i));
+  item.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openLightbox(i);}});
+});
+// Buttons form a labelled group rather than malformed ARIA lists.
+document.querySelectorAll('.galeria-grid,.recantos-grid,.lazer-grid').forEach(el=>el.setAttribute('role','group'));
+closeButton.addEventListener('click',closeLightbox);
+document.getElementById('lightboxPrev').addEventListener('click',()=>navLightbox(-1));
+document.getElementById('lightboxNext').addEventListener('click',()=>navLightbox(1));
+lightbox.addEventListener('click',e=>{if(e.target===lightbox)closeLightbox();});
+lightbox.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeLightbox();
+  if(e.key==='ArrowLeft'){e.preventDefault();navLightbox(-1);}
+  if(e.key==='ArrowRight'){e.preventDefault();navLightbox(1);}
+  if(e.key==='Tab'){
+    const last=document.getElementById('lightboxNext');
+    if(e.shiftKey && document.activeElement===closeButton){e.preventDefault();last.focus();}
+    else if(!e.shiftKey && document.activeElement===last){e.preventDefault();closeButton.focus();}
+  }
+});
+let touchStart=null;
+lightboxImg.addEventListener('touchstart',e=>{touchStart=e.touches.length===1?e.touches[0].clientX:null;},{passive:true});
+lightboxImg.addEventListener('touchend',e=>{
+  if(touchStart!==null){const dx=e.changedTouches[0].clientX-touchStart;if(Math.abs(dx)>60)navLightbox(dx<0?1:-1);}
+  touchStart=null;
+},{passive:true});
 
 // ─── FORM VALIDATION & SUBMIT ─────────────────────────────────────────────
 function showError(fieldId, show) {
@@ -172,6 +123,8 @@ function showError(fieldId, show) {
   const error = document.getElementById(fieldId + '-error');
   if (!field || !error) return;
   field.classList.toggle('error', show);
+  field.setAttribute('aria-invalid', String(show));
+  field.setAttribute('aria-describedby', error.id);
   error.classList.toggle('show', show);
 }
 
@@ -195,7 +148,10 @@ function validateForm() {
 
 document.getElementById('reservaForm').addEventListener('submit', function (e) {
   e.preventDefault();
-  if (!validateForm()) return;
+  if (!validateForm()) {
+    this.querySelector('[aria-invalid="true"]')?.focus();
+    return;
+  }
 
   const nome     = document.getElementById('nome').value.trim();
   const checkin  = document.getElementById('checkin').value;
@@ -239,23 +195,19 @@ document.getElementById('reservaForm').addEventListener('submit', function (e) {
   // wa.me corrompe emoji (4-byte UTF-8) na redirect 302 → vai direto ao destino final
   const waUrl = `https://api.whatsapp.com/send/?phone=5548984276280&text=${texto}&type=phone_number&app_absent=0`;
 
-  console.log('[WA] Mensagem:\n', mensagemFinal);
-  console.log('[WA] URL:', waUrl);
 
   document.getElementById('formSuccess').classList.add('show');
 
   // Deve ser chamado imediatamente (sem setTimeout) para preservar o gesto
   // do usuário — iOS e Android só disparam o deep link do WhatsApp nativo
   // quando window.open ocorre dentro do evento de clique.
-  const waJanela = window.open(waUrl, '_blank', 'noopener,noreferrer');
-  if (!waJanela) {
-    window.location.href = waUrl;
-  }
+  window.open(waUrl, '_blank', 'noopener,noreferrer');
 });
 
 // ─── SET MIN DATE ─────────────────────────────────────────────────────────
 (function () {
-  const today = new Date().toISOString().split('T')[0];
+  const localNow = new Date();
+  const today = [localNow.getFullYear(), String(localNow.getMonth() + 1).padStart(2, '0'), String(localNow.getDate()).padStart(2, '0')].join('-');
   const checkinEl  = document.getElementById('checkin');
   const checkoutEl = document.getElementById('checkout');
   checkinEl.min  = today;

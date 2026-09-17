@@ -16,11 +16,11 @@
   <link rel="icon" href="img/favicon/favicon-192.png" type="image/png" sizes="192x192" />
   <link rel="apple-touch-icon" href="img/favicon/apple-touch-icon.png" sizes="180x180" />
   <meta name="theme-color" content="#1A2218" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Josefin+Sans:wght@200;300;400&display=swap" rel="stylesheet" />
+  <link rel="preload" href="fonts/font-1.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/font-2.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="css/fonts.css" />
   <link rel="stylesheet" href="css/styles.css" />
-  <link rel="preload" as="image" href="img/galeria/hidro-nevoa.jpg" fetchpriority="high" />
+  <link rel="preload" as="image" href="img/galeria/hidro-nevoa.webp" fetchpriority="high" />
 
   <!-- Structured Data (SEO) -->
   <script type="application/ld+json">
@@ -79,7 +79,7 @@
           <li><a href="#tarifas">Tarifas</a></li>
           <li><a href="#contato" class="nav-cta">Reserve agora</a></li>
         </ul>
-        <button class="nav-toggle" id="navToggle" aria-label="Abrir menu de navegação" aria-expanded="false">
+        <button class="nav-toggle" id="navToggle" aria-label="Abrir menu de navegação" aria-expanded="false" aria-controls="navLinks">
           <span></span><span></span><span></span>
         </button>
       </div>
@@ -87,6 +87,7 @@
   </nav>
 
   <!-- ─── HERO ─────────────────────────────────────────────────── -->
+  <main>
   <section class="hero" id="inicio" aria-label="Apresentação do chalé">
     <div class="nav-sentinel" id="navSentinel" aria-hidden="true"></div>
     <div class="hero-bg" id="heroBg" role="img" aria-label="Hidromassagem com espuma diante de uma vista panorâmica da Serra Catarinense entre nuvens"></div>
@@ -898,6 +899,7 @@
   </section>
 
   <!-- ─── FOOTER ────────────────────────────────────────────────── -->
+  </main>
   <footer role="contentinfo">
     <div class="container">
       <div class="footer-grid">
@@ -984,7 +986,7 @@
   </div>
 
   <!-- ─── LIGHTBOX ──────────────────────────────────────────────── -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visualizador de imagens">
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visualizador de imagens" tabindex="-1" inert>
     <button class="lightbox-close" id="lightboxClose" aria-label="Fechar visualizador">✕</button>
     <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Imagem anterior">‹</button>
     <img src="" alt="" id="lightboxImg" />
