@@ -1078,15 +1078,27 @@ textarea:focus-visible,
 }
 .tarifa-feat {
   display: flex;
-  align-items: center;
+  /* flex-start (e não center) para o check acompanhar a 1ª linha nos itens
+     que quebram em duas, como o do café da manhã */
+  align-items: flex-start;
   gap: 0.7rem;
   font-size: 0.92rem;
+  line-height: 1.45;
   color: rgba(42,34,24,0.7);
   font-family: var(--fonte-corpo);
 }
 .tarifa-card.featured .tarifa-feat { color: rgba(240,235,224,0.75); }
-.tarifa-feat svg { color: var(--cor-musgo); flex-shrink: 0; }
+.tarifa-feat svg { color: var(--cor-musgo); flex-shrink: 0; margin-top: 0.32em; }
 .tarifa-card.featured .tarifa-feat svg { color: var(--cor-ouro); }
+/* O plano destacado repete a mesma lista do outro; só este item difere —
+   separá-lo deixa a vantagem óbvia sem obrigar a comparar linha a linha */
+.tarifa-feat.destaque {
+  margin-top: 0.35rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(201,169,110,0.25);
+  font-weight: 600;
+}
+.tarifa-card.featured .tarifa-feat.destaque { color: var(--cor-ouro); }
 .tarifa-cta {
   display: block;
   width: 100%;
@@ -1198,6 +1210,58 @@ textarea:focus-visible,
   border: 2px solid rgba(201,169,110,0.3);
   pointer-events: none;
 }
+.cidade-banner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.5rem;
+  align-items: center;
+  margin-top: 4.5rem;
+  padding-top: 4.5rem;
+  border-top: 1px solid rgba(201,169,110,0.18);
+}
+.cidade-foto { position: relative; }
+.cidade-foto img { width: 100%; height: 340px; object-fit: cover; }
+.cidade-foto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(201,169,110,0.3);
+  pointer-events: none;
+}
+.cidade-texto { color: var(--cor-texto-claro); }
+.cidade-destaque {
+  font-family: var(--fonte-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--cor-ouro);
+  line-height: 1.2;
+  margin: 0.7rem 0 1rem;
+}
+.cidade-desc {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: rgba(240,235,224,0.7);
+  margin-bottom: 1.8rem;
+}
+.cidade-servicos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.7rem;
+}
+.cidade-servico {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 0.9rem;
+  background: rgba(255,255,255,0.04);
+  border-left: 2px solid rgba(201,169,110,0.5);
+  font-family: var(--fonte-ui);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(240,235,224,0.8);
+}
+.cidade-servico svg { color: var(--cor-ouro); flex-shrink: 0; }
 
 /* ─── CONTATO ────────────────────────────────────────────────────────── */
 .contato {
@@ -1602,6 +1666,9 @@ footer {
 /* ─── RESPONSIVE ─────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .sobre-grid, .chegar-grid, .contato-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .cidade-banner { grid-template-columns: 1fr; gap: 2rem; margin-top: 3rem; padding-top: 3rem; }
+  .cidade-foto img { height: 240px; }
+  .cidade-destaque { font-size: 1.7rem; }
   /* Em vez de esconder a foto dos poneis, empilha ela abaixo da foto principal */
   .sobre-img-wrapper { padding-bottom: 1rem; }
   .sobre-img-accent-wrap {
@@ -1687,7 +1754,19 @@ footer {
   .lazer-grid .gal-item:nth-child(7), .lazer-grid .gal-item:nth-child(8) { grid-column: span 12; }
   .recantos-grid { grid-template-columns: 1fr; }
   .sobre-img-accent-wrap { height: 220px; }
-  .comodidades-grid { grid-template-columns: repeat(2, 1fr); }
+  /* Em 2 colunas a coluna fica ~150px: sem apertar padding/letter-spacing a
+     palavra "ELETRODOMÉSTICOS" estoura a largura e o overflow:hidden corta */
+  .comodidades-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .comodidade-card { padding: 1.75rem 0.9rem; }
+  .comodidade-name {
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  /* Mesmo cuidado dos cards de comodidades: caixa alta + letter-spacing
+     estoura os chips em 2 colunas estreitas */
+  .cidade-servico { font-size: 0.66rem; letter-spacing: 0.04em; padding: 0.7rem; gap: 0.5rem; }
   .form-reserva { padding: 2rem 1.5rem; }
   .hero-title { font-size: 2.6rem; }
   .stats-grid { gap: 1rem; }
